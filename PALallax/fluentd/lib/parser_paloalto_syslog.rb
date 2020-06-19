@@ -21,8 +21,8 @@ module Fluent
 
       raise "ERR001:syslog format error(no syslog value)" if syslog_value[1].nil?
 
-      if %r{@#000:\s?\"os[678].[01]\"} === syslog_value[1]\
-      || %r{@000:\s?\"os[678].[01]\"} === syslog_value[1] then
+      if %r{@#000:\s?\"os[6789].[01]\"} === syslog_value[1]\
+      || %r{@000:\s?\"os[6789].[01]\"} === syslog_value[1] then
 
     logemit(syslog_value)
 
@@ -98,7 +98,14 @@ module Fluent
         "parent_start_time" => "@063",
         "tunnel_type" => "@064",
         "threat_category" => "@065",
-        "content_version" => "@066"
+        "content_version" => "@066",
+        "sctp_association_id" => "@067",
+        "payload_protocol_id" => "@068",
+        "http_headers" => "@069",
+        "url_category_list" => "@070",
+        "rule_uuid" => "@071",
+        "http2_connection" => "@072",
+        "dynamic_usergroup_name" => "@073"
 
        }
 
@@ -154,7 +161,21 @@ module Fluent
         "monitor_tag_imei" => "@#054",
         "parent_session_id" => "@#055",
         "parent_start_time" => "@#056",
-        "tunnel_type" => "@#057"
+        "tunnel_type" => "@#057",
+        "sctp_association_id" => "@#058",
+        "sctp_chunks" => "@#059",
+        "sctp_chunks_sent" => "@#060",
+        "sctp_chunks_received" => "@#061",
+        "rule_uuid" => "@#062",
+        "http2_connection" => "@#063",
+        "link_change_count" => "@#064",
+        "policy_id" => "@#065",
+        "link_switches" => "@#066",
+        "sdwan_cluster" => "@#067",
+        "sdwan_device_type" => "@#068",
+        "sdwan_cluster_type" => "@#069",
+        "sdwan_site" => "@#070",
+        "dynamic_usergroup_name" => "@#071"
 
        }
 
