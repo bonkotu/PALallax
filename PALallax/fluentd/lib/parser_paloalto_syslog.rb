@@ -179,6 +179,41 @@ module Fluent
 
        }
 
+       field_hash_globalprotect ={
+        "receive_time" => "@002",
+        "serial" => "@003",
+        "seqno" => "@004",
+        "actionflags" => "@005",
+        "type" => "@006",
+        "time_generated" => "@007",
+        "vsys" => "@008",
+        "eventid" => "@009",
+        "stage" => "@010",
+        "auth_method" => "@011",
+        "tunnel_type" => "@012",
+        "srcuser" => "@013",
+        "srcregion" => "@014",
+        "machinename" => "@015",
+        "public_ip" => "@016",
+        "public_ipv6" => "@017",
+        "private_ip" => "@018",
+        "private_ipv6" => "@019",
+        "hostid" => "@020",
+        "serialnumber" => "@021",
+        "client_ver" => "@022",
+        "client_os" => "@023",
+        "client_os_ver" => "@024",
+        "repeatcnt" => "@025",
+        "reason" => "@026",
+        "opaque" => "@027",
+        "status" => "@028",
+        "location" => "@029",
+        "login_duration" => "@030",
+        "connect_method" => "@031",
+        "error_code" => "@032",
+        "portal" => "@033"
+
+       }
 
        #Threat log parse
        if syslog_value[1].include?("@004:\"THREAT\"") then
@@ -280,6 +315,39 @@ module Fluent
 
         tag = "syslog_traffic.palo"
 
+        #GlobalProtect log parse
+        elsif syslog_value[1].include?("@#006:\"GLOBALPROTECT\"") then
+
+          #Hostname extraction
+          record_value["hostname"] = syslog_value[0].split(" ")[3]
+
+          field_hash_traffic.each{|key, value|
+
+            record =  case value
+              when "@#002" then  time_transformation(syslog_value[1].match(%r{#{value}:\s*"(.*?)"})[1])
+              when "@#007" then  time_transformation(syslog_value[1].match(%r{#{value}:\s*"(.*?)"})[1])
+              when value then  syslog_value[1].match(%r{#{value}:\s*"(.*?)"})
+            end
+
+            # recordの中身がnullの場合、空白を代入する。
+            # recordのclassがMatchDataの場合、record配列の[1]をrecord_valueに代入する。（record[1]でMatchメソッドで取得した値が取得可能）
+            # classがMatchDataではない場合、record変数には時間情報が代入されているため、record_valueにそのままrecordの値を代入する。
+            if record == nil || record == " " then
+                record_value["#{key}"] == nil
+            elsif record.class == MatchData then
+                if record[1] == nil || record[1] == "" then
+                    record_value["#{key}"] = nil
+                else
+                    record_value["#{key}"] = record[1]
+                end
+            else
+                record_value["#{key}"] = record
+            end
+
+          }
+
+        tag = "syslog_globalprotect.palo"
+
         else
          raise "ERR003:syslog format error(type definition error)"
         end
@@ -332,6 +400,10 @@ module Fluent
         end
 
         return splitdata
+    end
+
+    def perse_category_list(syslog_value)
+     
     end
 
   end
